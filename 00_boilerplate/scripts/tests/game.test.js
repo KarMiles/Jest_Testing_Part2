@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
- const { game, newGame, showScore } = require("../game");
+ const { game, newGame, addTurn, showScore, lightsOn, showTurns } = require("../game");
 
 beforeAll(() => {
     let fs = require("fs");
@@ -44,10 +44,38 @@ describe("newGame works correctly", () => {
     test("should clear playerMoves array", () => {
         expect(game.playerMoves).toEqual([]);
     });
-    test("should clear currentGame array", () => {
-        expect(game.currentGame).toEqual([]);
+    test("should be one move in the computer's game array", () => {
+        expect(game.currentGame.length).toBe(1);
     });
     test("should display 0 for the element with id of score", () => {
         expect(document.getElementById('score').innerText).toEqual(0);
-    })
-})
+    });
+});
+
+describe("gameplay works correctly", () => {
+    beforeEach(() => {
+        game.score = 0;
+        game.currentGame = [];
+        game.playerMoves = [];
+        addTurn();
+    });
+    afterEach(() => {
+        game.score = 0;
+        game.currentGame = [];
+        game.playerMoves = [];
+    });
+    test("addTurn adds a new turn to the game", () => {
+        addTurn();
+        expect(game.currentGame.length).toBe(2);
+    });
+    test("should add correct class to light up the buttons", () => {
+        let button = document.getElementById(game.currentGame[0]);
+        lightsOn(game.currentGame[0]);
+        expect(button.classList).toContain("light");
+    });
+    test("showTurns should update game.turnNumber", () => {
+        game.turnNumber = 42;
+        showTurns();
+        expect(game.turnNumber).toBe(0);
+    });
+});
